@@ -2,6 +2,13 @@ const path = require('path')
 const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const UglifyjsWebpackPlugin = require('uglifyjs-webpack-plugin')
+const CleanWebpackPlugin = require('clean-webpack-plugin')
+const ExtractTextPlugin = require('extract-text-webpack-plugin')
+
+const extractSass = new ExtractTextPlugin({
+    filename: 'css/[name].[contenthash:5].css',
+    allChunks: true
+})
 
 module.exports = {
     devtool: 'cheap-module-source-map',
@@ -13,8 +20,9 @@ module.exports = {
     },
     output: {
         path: path.join(__dirname, './dist'),
-        filename: '[name].[chunkhash].js',
-        chunkFilename: '[name].[chunkhash].js'
+        filename: 'js/[name].[chunkhash].js',
+        chunkFilename: 'js/[name].[chunkhash].js',
+        publicPath : '/'
     },
     module: {
         rules: [
@@ -25,13 +33,14 @@ module.exports = {
             },
             {
                 test: /\.sass$/,
-                use: [{
-                    loader: 'style-loader'
-                }, {
-                    loader: 'css-loader'
-                }, {
-                    loader: 'sass-loader'
-                }]
+                use: extractSass.extract({
+                    use: [{
+                        loader: 'css-loader'
+                    },{
+                        loader: 'sass-loader'
+                    }],
+                    fallback: 'style-loader'
+                })
             },
             {
                 test: /\.(png|jpg|gif|jpeg)$/,
@@ -45,6 +54,7 @@ module.exports = {
         ]
     },
     plugins: [
+        new CleanWebpackPlugin(['dist']),
         new UglifyjsWebpackPlugin(),
         new webpack.DefinePlugin({
             'process.env': {
@@ -57,7 +67,11 @@ module.exports = {
         }),
         new webpack.optimize.CommonsChunkPlugin({
             name: 'vendor'
-        })
+        }),
+        new webpack.optimize.CommonsChunkPlugin({
+            name: 'runtime'
+        }),
+        extractSass
     ],
     resolve: {
         alias: {

@@ -6,7 +6,7 @@ export default class extends Component {
     render () {
         return (
             <div className="container">
-                hello home page
+                hello home page 456
                 <img src={cart} alt="cart"/>
             </div>
         )
