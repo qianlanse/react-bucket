@@ -3,7 +3,7 @@ export const GET_USER_INFO_SUCCESS = 'GET_USER_INFO_SUCCESS'
 export const GET_USER_INFO_FAIL = 'GET_USER_INFO_FAIL'
 
 export function getUserInfo () {
-    return dispatch => {
+    /* return dispatch => {
         dispatch(getUserInfoRequest())
         return fetch('http://localhost:8090/api/user.json')
             .then(res => {
@@ -15,6 +15,14 @@ export function getUserInfo () {
             .catch(err => {
                 dispatch(getUserInfoFail())
             })
+    } */
+    return {
+        types: [GET_USER_INFO_REQUEST, GET_USER_INFO_SUCCESS, GET_USER_INFO_FAIL],
+        promise: client => client.get(`/api/user`)
+        /* afterSuccess: (dispatch, getState, response) => {
+            console.log(dispatch, getState, response)
+            dispatch(getUserInfoSuccess(response))
+        } */
     }
 }
 
